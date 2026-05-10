@@ -1,4 +1,4 @@
-# Homework 9 — Announcements REST API
+# UMT-js-homework3 — Announcements REST API
 
 RESTful API для дошки оголошень. Сервер віддає **виключно JSON** —
 жодного рендерингу HTML. Реалізовано повний CRUD з пошуком,
@@ -20,10 +20,11 @@ RESTful API для дошки оголошень. Сервер віддає **в
 ## Структура проєкту
 
 ```
-homework9/
+UMT-js-homework3/
 ├── prisma/
 │   ├── schema.prisma                # модель Announcement
 │   ├── client.js                    # експорт Prisma Client
+│   ├── seed.js                      # тестові 25 оголошень
 │   └── migrations/                  # застосована міграція
 ├── src/
 │   ├── controllers/
@@ -42,20 +43,25 @@ homework9/
 ## Швидкий старт
 
 ```bash
-cd /home/saniksin/education/node_js/homework9
+# 1. Клонувати репозиторій та зайти у папку
+git clone <repo-url> UMT-js-homework3
+cd UMT-js-homework3
 
-# 1. Встановити залежності
+# 2. Встановити залежності
 npm install
 
-# 2. Створити .env (якщо ще нема)
+# 3. Створити .env (якщо ще нема)
 cp .env.example .env
 
-# 3. Застосувати міграції та створити БД
+# 4. Застосувати міграції та згенерувати Prisma Client
 npm run prisma:migrate
 npm run prisma:generate
 
-# 4. Запустити сервер
-npm run dev          # з hot reload
+# 5. Заповнити БД 25 тестовими оголошеннями
+npm run db:seed
+
+# 6. Запустити сервер
+npm run dev          # з hot reload (--watch)
 # або
 npm start            # звичайний запуск
 ```
@@ -69,8 +75,10 @@ Swagger UI: **http://localhost:3000/api-docs**.
 відкрити `requests.http` у VS Code (розширення REST Client) і клацати
 "Send Request" над кожним блоком. Альтернативно — Swagger UI.
 
-> **Перед перевіркою**: запустіть сервер (`npm run dev`) і створіть
-> декілька оголошень через POST з пункту 4 нижче, щоб мати дані.
+> **Перед перевіркою**: запустіть сервер (`npm run dev`) і виконайте
+> `npm run db:seed` — це створить 25 тестових оголошень з різними
+> категоріями (sale/service/job/other) і різними датами створення для
+> зручної перевірки пошуку, сортування та пагінації.
 
 ---
 
@@ -137,10 +145,11 @@ curl -s "http://localhost:3000/announcements?sort=oldest"
 
 **2.4. Пагінація — 10 на сторінку (1 бал)**
 
-Створіть 14 записів циклом, потім:
+Після `npm run db:seed` у БД є 25 записів:
 ```bash
-curl -s "http://localhost:3000/announcements?page=1"   # 10 записів
-curl -s "http://localhost:3000/announcements?page=2"   # 4 записи, totalPages=2
+curl -s "http://localhost:3000/announcements?page=1"   # 10 записів, totalPages=3
+curl -s "http://localhost:3000/announcements?page=2"   # 10 записів
+curl -s "http://localhost:3000/announcements?page=3"   # 5 записів
 ```
 
 ---
@@ -321,6 +330,7 @@ VS Code з розширенням **REST Client** і клацайте "Send Requ
 | `npm run dev` | Запуск з `--watch` (auto-restart при змінах) |
 | `npm run prisma:migrate` | Створити/застосувати міграцію |
 | `npm run prisma:generate` | Згенерувати Prisma Client |
+| `npm run db:seed` | Заповнити БД 25 тестовими оголошеннями |
 
 ## Технічні нотатки
 
